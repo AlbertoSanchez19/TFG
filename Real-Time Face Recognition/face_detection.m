@@ -1,9 +1,12 @@
-cam = webcam(1);
+rpi = raspi("192.168.1.20", "pi", "raspberry");
+cam = cameraboard(rpi, "Resolution", "640x480");
 
 % Cargamos la red neuronal que hemos creado. "net.mat" se ha creado con el
 % comando save("net.mat", "net");
-net = coder.loadDeepLearningNetwork("net.mat");
+net = coder.loadDeepLearningNetwork("./SAVED_OBJECTS/net.mat");
 
+% ---  ESTO ES PARA COD, LO HE CAMBIADO AHORA POR YOLOv4 ---
+% load("detector.mat");
 % Usamos un Vision Cascade Detector para detectar las caras. Una vez nos
 % detecte donde está la cara, usaremos esa información junto a la red que
 % hemos creado para saber qué persona es.
@@ -22,24 +25,31 @@ text2display = "......";
 % actual, y toc lo utiliza para ver el tiempo transcurrido.
 start = tic;
 fprintf("Entering into while loop.\n");
+
+bounding_boxes = [];
 while true
-    % Capture image from webcam
+    % Saca una captura de la cámara
     img = snapshot(cam);
 
     elapsed_time = toc(start);
 
-    % Process frames at 1 per second
+    % Procesa un frame cada segundo
     if(elapsed_time > 1)
 
-        % Obtenemos las "cajas" donde se encuentras las caras.
+        % YOLOv4 -> Obtenemos las "cajas" donde se encuentras las caras.
+        %[bounding_boxes,scores,labels] = detect(detector,img);
+
+        % COD
         bounding_boxes = face_detector(img);
-
+        
+        % Si no es vacío, es decir, ha detectado alguna cara.
         if ~isempty(bounding_boxes)
+            % La recortamos para solo quedarnos con la cara detectado.
             img_processed = imcrop(img, bounding_boxes(1,:));
-            % Resize the image
-            img_resized = imresize(img_processed, input_size(1:2));
 
-            % Classify the input image
+            % Adaptamos el tamaño de la imagen a la entrada de la red.
+            img_resized = imresize(img_processed, input_size(1:2));
+            % Clasificamos la imagen
             [label,score] = net.classify(img_resized);
             max_score = max(score);
     
@@ -49,9 +59,14 @@ while true
         end
     end
 
-    % Display the predicted label
     % Insertamos en img, en la posición 0,0, el texto previamente calculado
     img_label = insertText(img, [0,0], text2display);
-    img_label = insertObjectAnnotation(img_label, "rectangle", bounding_boxes, "Face", "LineWidth", 2);
+    % Actualizamos el cuadrado solamente si ha detectado una cara.
+    if ~isempty(bounding_boxes)
+        img_label = insertObjectAnnotation(img_label, "rectangle", bounding_boxes, "Face", "LineWidth", 2);
+    end
     imshow(img_label);
 end
+
+clear rpi;
+clear cam;
