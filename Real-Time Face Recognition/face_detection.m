@@ -1,5 +1,6 @@
-function face_detection()
+function face_detection() 
 %#codegen
+
 rpi = raspi("192.168.1.20", "pi", "raspberry");
 cam = cameraboard(rpi, "Resolution", "640x480");
 %cam = webcam();
@@ -30,17 +31,18 @@ text2display = "......";
 start = tic;
 fprintf("Entering into while loop.\n");
 bounding_boxes = zeros(1,4,'single');
-while true
+
+for i = 1:1000
     % Saca una captura de la cámara
     img = snapshot(cam);
 
     elapsed_time = toc(start);
 
     % Procesa un frame cada segundo
-    if(elapsed_time > 0.01)
+    if(elapsed_time > 1)
 
         % YOLOv4 -> Obtenemos las "cajas" donde se encuentras las caras.
-        [bounding_boxes,scores,labels] = detect(detector,img);
+        bounding_boxes = detect(detector,img);
 
         % COD
         %bounding_boxes = face_detector(img);
@@ -61,8 +63,8 @@ while true
     
             label_str = cellstr(label);
             text2display = sprintf("Label : %s \nScore: %f", label_str{:}, max_score);
-            start = tic;
         end
+        start = tic;
     end
 
     % Para la generación de código, text2display necesita ser de tipo cell
@@ -74,5 +76,6 @@ while true
     if ~isempty(bounding_boxes)
         img_label = insertObjectAnnotation(img_label, "rectangle", bounding_boxes, "Face", "LineWidth", 2);
     end
-    imshow(img_label);
+    %imshow(img_label);
+    displayImage(rpi, img_label);
 end
