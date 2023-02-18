@@ -7,12 +7,11 @@ cam = webcam();
 
 % Cargamos la red neuronal que hemos creado. "net.mat" se ha creado con el
 % comando save("net.mat", "net");
-net = coder.loadDeepLearningNetwork("./SAVED_OBJECTS/net.mat");
+net = coder.loadDeepLearningNetwork("./SAVED_OBJECTS/NET/net.mat");
 
 % ---  ESTO ES PARA COD, LO HE CAMBIADO AHORA POR YOLOv4 ---
 %load("SAVED_OBJECTS\detector.mat");
-%detector = coder.loadDeepLearningNetwork("SAVED_OBJECTS\YOLOTF\2\detector.mat");
-detector = coder.loadDeepLearningNetwork("SAVED_OBJECTS\YOLOdetector2.mat");
+detector = coder.loadDeepLearningNetwork("SAVED_OBJECTS\YOLOTF\2\detector.mat");
 % Usamos un Vision Cascade Detector para detectar las caras. Una vez nos
 % detecte donde está la cara, usaremos esa información junto a la red que
 % hemos creado para saber qué persona es.
@@ -25,13 +24,15 @@ detector = coder.loadDeepLearningNetwork("SAVED_OBJECTS\YOLOdetector2.mat");
 
 input_size = [224,224,3];
 
-%text2display = "......";
+text2display = strings(20,1);
+label = strings([1, 20]);
+bboxes_pos = zeros(20,4);
 
 % tic sirve para medir el tiempo transcurrido. tic devuelve el tiempo
 % actual, y toc lo utiliza para ver el tiempo transcurrido.
 start = tic;
 fprintf("Entering into while loop.\n");
-%bounding_boxes = zeros(10,4,'single');
+bounding_boxes = zeros(10,4,'single');
 
 for i = 1:10000
     % Saca una captura de la cámara
@@ -40,7 +41,7 @@ for i = 1:10000
     elapsed_time = toc(start);
 
     % Procesa un 10 frames cada segundo
-    if(elapsed_time > 0.1)
+    if(elapsed_time > 1)
 
         % YOLOv4 -> Obtenemos las "cajas" donde se encuentras las bees/wasps.
         [bounding_boxes, yolo_score] = detect(detector,img);
@@ -62,22 +63,30 @@ for i = 1:10000
                 % Adaptamos el tamaño de la imagen a la entrada de la red.
                 img_resized = imresize(img_processed, input_size(1:2));
                 % Clasificamos la imagen
-                [label,net_score] = net.classify(img_resized);
+                [label(b),net_score] = net.classify(img_resized);
                 %max_score = max(net_score);
         
-                text2display = sprintf("\nYOLO Score: %f\nNet Score: %f", max(yolo_score), max(net_score));
+                text2display(b) = sprintf("\nYOLO Score: %f\nNet Score: %f", max(yolo_score), max(net_score));
 
-                 % Para la generación de código, text2display necesita ser de tipo cell
+                % Para la generación de código, text2display necesita ser de tipo cell
                 % en vez de string
-                ctext2display = cellstr(text2display);
-                % Insertamos en img, en la posición 0,0, el texto previamente calculado
-                img = insertText(img, bounding_boxes(b,1:2), ctext2display);
-                % Actualizamos el cuadrado solamente si ha detectado una cara.
-                img = insertObjectAnnotation(img, "rectangle", bounding_boxes(b,:), label, "LineWidth", 2);
+                %ctext2display(b) = text2display;
+ 
+                bboxes_pos(b,:) = bounding_boxes(b,:);
             end
         end
+        start = tic;
+    end
+    ctext2display = cellstr(text2display);
+    % Actualizamos el cuadrado solamente si ha detectado una cara.
+    if ~isempty(bounding_boxes)
+        % Insertamos en img, en la posición 0,0, el texto previamente calculado
+        img_label = insertText(img, bboxes_pos(:, 1:2), ctext2display);
+        img_label = insertObjectAnnotation(img_label, "rectangle", bboxes_pos, label, "LineWidth", 2);
+        imshow(img_label);
+        %displayImage(rpi, img_label);
+    else
         imshow(img);
         %displayImage(rpi, img);
-        start = tic;
     end
 end
