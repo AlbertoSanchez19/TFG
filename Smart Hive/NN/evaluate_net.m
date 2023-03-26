@@ -1,10 +1,10 @@
 % Cambiamos el tamaño de las imágenes, para que se ajuste al tamaño de
 % entrada de la red
-%augmented_test_images = augmentedImageDatastore(input_size(1:2), test_data);
+augmented_test_images = augmentedImageDatastore(input_size(1:2), test_data);
 
 % Clasificamos las imágenes de test
-%[label_pred,scores] = classify(net,augmented_test_images);
-
+[label_pred,scores] = classify(net,augmented_test_images);
+%%
 % Vamos a mostrar unas imagenes random para ver si funciona bien la red
 idx = randperm(numel(test_data.Files),4);
 figure
@@ -23,7 +23,7 @@ accuracy = mean(label_pred == label_test);
 
 c_mat = confusionmat(label_test,label_pred,'Order',{'bee','wasp'});
 % Nos muestra en un gráfico la matriz de confusión de manera más bonita
-%c_chart = confusionchart(label_test,label_pred);
+c_chart = confusionchart(label_test,label_pred);
 
 precision = diag(c_mat) ./ sum(c_mat,2);
 % Tenemos que trasponer la matriz devuelta por sum para que haga la
@@ -36,7 +36,7 @@ f1 = 2.*(1./(1./precision + 1./recall));
 % TruePositiveRate) para cada clase
 roc_obj = rocmetrics(label_test, scores, [{'bee'}, {'wasp'}]);
 
-%plot(roc_obj)
+plot(roc_obj)
 
 % NO TIENE SENTIDO PARA REDES DE CLASIFICACIÓN
 % Mean Squarred Error

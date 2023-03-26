@@ -28,20 +28,25 @@ text2display = strings(20,1);
 label = strings([1, 20]);
 bboxes_pos = zeros(20,4);
 
+fps = 0;
+avgfps = [];
+
 % tic sirve para medir el tiempo transcurrido. tic devuelve el tiempo
 % actual, y toc lo utiliza para ver el tiempo transcurrido.
-start = tic;
+%start = tic;
 fprintf("Entering into while loop.\n");
 bounding_boxes = zeros(10,4,'single');
 
-for i = 1:10000
+for i = 1:1000
     % Saca una captura de la cámara
     img = snapshot(cam);
 
-    elapsed_time = toc(start);
+    %elapsed_time = toc(start);
 
     % Procesa un 10 frames cada segundo
-    if(elapsed_time > 1)
+    %if(elapsed_time > 1)
+
+    tic;
 
         % YOLOv4 -> Obtenemos las "cajas" donde se encuentras las bees/wasps.
         [bounding_boxes, yolo_score] = detect(detector,img);
@@ -52,6 +57,7 @@ for i = 1:10000
         % Si no es vacío, es decir, ha detectado alguna.
         if ~isempty(bounding_boxes)
             
+            bboxes_pos = zeros(20,4);
             % Iteramos por cada una de las bounding_boxes detectadas
             for b = 1:size(bounding_boxes)
                 % La recortamos para solo quedarnos con la bee/wasp detectada.
@@ -75,8 +81,12 @@ for i = 1:10000
                 bboxes_pos(b,:) = bounding_boxes(b,:);
             end
         end
-        start = tic;
-    end
+        %start = tic;
+    %end
+    start = toc;
+    fps = .9*fps + 1*(1/start);
+
+    img = insertText(img, [1, 1],  sprintf('FPS %2.2f', fps), 'FontSize', 22, 'BoxColor', 'y');
     ctext2display = cellstr(text2display);
     % Actualizamos el cuadrado solamente si ha detectado una cara.
     if ~isempty(bounding_boxes)
@@ -89,4 +99,5 @@ for i = 1:10000
         imshow(img);
         %displayImage(rpi, img);
     end
+
 end

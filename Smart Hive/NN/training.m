@@ -5,9 +5,9 @@ data = imageDatastore('..\Dataset\NN_Dataset\', 'IncludeSubfolders', true, 'Labe
 
 % Dividimos el dataset en dos conjutnos, para entrenar y para validar.
 [training_data, validation_data, test_data] = splitEachLabel(data, 0.7,0.15, 'randomized');
-
+%%
 % Vamos a usar una red 'googlenet'.
-net = googlenet;
+%net = googlenet;
 
 % Guardamos el tamaño de entrada de la red.
 input_size = net.Layers(1).InputSize;
@@ -21,14 +21,17 @@ input_size = net.Layers(1).InputSize;
 % Categories para que no haya repetidos
 num_of_classes = numel(categories(training_data.Labels));
 
-new_learnable_layer = fullyConnectedLayer(num_of_classes, 'Name', 'Bee_wasp Learner', 'WeightLearnRateFactor', 10, 'BiasLearnRateFactor', 10);
+%new_learnable_layer = fullyConnectedLayer(num_of_classes, 'Name', 'Bee_wasp Learner', 'WeightLearnRateFactor', 10, 'BiasLearnRateFactor', 10);
 new_classify_layer = classificationLayer('Name', 'Bee_wasp Classifier');
 
 % Sustituimos en la red las nuevas neuronas que hemos creado
 % Para sustituirlas, las 'referenciamos' con su nombre (.Name)
 layer_graph = layerGraph(net);
-layer_graph = replaceLayer(layer_graph, 'loss3-classifier', new_learnable_layer);
-layer_graph = replaceLayer(layer_graph, 'output', new_classify_layer);
+%layer_graph = replaceLayer(layer_graph, 'loss3-classifier', new_learnable_layer);
+%layer_graph = replaceLayer(layer_graph, 'Bee_wasp Learner', new_learnable_layer);
+
+%layer_graph = replaceLayer(layer_graph, 'classoutput', new_classify_layer);
+layer_graph = replaceLayer(layer_graph, 'Bee_wasp Classifier', new_classify_layer);
 
 % Para que no se produzca un sobreaprendizaje en la red, vamos a modificar
 % un poco el dataset de imagenes.
@@ -51,11 +54,11 @@ augmented_validation_images = augmentedImageDatastore(input_size(1:2), validatio
 training_options = trainingOptions('adam', ...
     'GradientDecayFactor', 0.9,...
     'SquaredGradientDecayFactor',0.999,...
-    'MiniBatchSize', 32, ...
+    'MiniBatchSize', 64, ...
     'LearnRateSchedule','piecewise', ...
-    'MaxEpochs',30, ...
+    'MaxEpochs',50, ...
     'InitialLearnRate',0.001, ...
-    'LearnRateDropPeriod', 13,...
+    'LearnRateDropPeriod', 20,...
     'L2Regularization', 0.01,...
     'BatchNormalizationStatistics', 'moving',...
     'DispatchInBackground', true,...
