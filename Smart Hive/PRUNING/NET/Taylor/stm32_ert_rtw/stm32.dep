@@ -1,0 +1,20 @@
+stm32.o: \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32.c \
+ C:/ProgramData/MATLAB/SupportPackages/R2022b/toolbox/target/supportpackages/stmnucleo/mbed/NUCLEO_H743ZI/mbed_config.h \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32.h \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/rtwtypes.h \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32_types.h \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/rt_nonfinite.h \
+ C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32_private.h
+
+C:/ProgramData/MATLAB/SupportPackages/R2022b/toolbox/target/supportpackages/stmnucleo/mbed/NUCLEO_H743ZI/mbed_config.h:
+
+C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32.h:
+
+C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/rtwtypes.h:
+
+C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32_types.h:
+
+C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/rt_nonfinite.h:
+
+C:/Users/alber/MYDOCU~1/UNIVER~1/4/TFG/SMARTH~1/PRUNING/NET/Taylor/stm32_ert_rtw/stm32_private.h:
